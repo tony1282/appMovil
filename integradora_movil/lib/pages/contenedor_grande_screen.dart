@@ -54,56 +54,80 @@ class _ContenedorGrandeState extends State<ContenedorGrandeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Padding(
-          padding: const EdgeInsets.only(left: 10.0), // Ajusta la cantidad de padding aquí
-          child: const Text(
-            'Contenedor Grande',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+        title: const Text(
+          'Contenedor Grande',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+            color: Colors.yellow, // Amarillo en el texto
           ),
         ),
-        backgroundColor: const Color.fromARGB(255, 255, 245, 103),
-        elevation: 5,
+        backgroundColor: Colors.black, // Fondo negro para el AppBar
+        elevation: 0, // Sin sombra
         actions: [
           IconButton(
+            icon: const Icon(Icons.notifications, color: Colors.yellow),
             onPressed: () {
-              // Agregar lógica para abrir pantalla de agregar contenedor
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => InsertBigContainerScreen()),
-              );
+              print("Notificaciones presionadas");
             },
-            icon: const Icon(Icons.add),
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          // Fondo con difuminado
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/background.jpg'), // Asegúrate de tener esta imagen en la carpeta assets
-                  fit: BoxFit.cover,
-                ),
-              ),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0), // Difuminado
-                child: Container(
-                  color: Colors.black.withOpacity(0.18), // Sombra oscura para mejorar contraste
-                ),
+      body: Container(
+        color: Colors.black, // Fondo negro para todo el cuerpo
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: bcontainer.length,
+                itemBuilder: (context, index) {
+                  var bcont = bcontainer[index];
+                  return oneTile(bcont);
+                },
               ),
             ),
+          ],
+        ),
+      ),
+      // Footer con iconos reorganizados: Inicio, Usuario, Configuración, Ayuda
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.black, // Fondo negro para el footer
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround, // Distribuye los íconos
+            children: [
+              // Icono de Inicio
+              IconButton(
+                icon: Icon(Icons.home, color: Colors.yellow),
+                onPressed: () {
+                  print("Inicio presionado");
+                },
+              ),
+              // Icono de Usuario
+              IconButton(
+                icon: Icon(Icons.person, color: Colors.yellow),
+                onPressed: () {
+                  print("Usuario presionado");
+                },
+              ),
+              // Icono de Configuración
+              IconButton(
+                icon: Icon(Icons.settings, color: Colors.yellow),
+                onPressed: () {
+                  print("Configuración presionada");
+                },
+              ),
+              // Icono de Ayuda
+              IconButton(
+                icon: Icon(Icons.help, color: Colors.yellow),
+                onPressed: () {
+                  print("Ayuda presionada");
+                },
+              ),
+            ],
           ),
-          // Contenido de la pantalla
-          ListView.builder(
-            itemCount: bcontainer.length,
-            itemBuilder: (context, index) {
-              var bcont = bcontainer[index];
-              return oneTile(bcont);
-            },
-          ),
-        ],
+        ),
       ),
     );
   }

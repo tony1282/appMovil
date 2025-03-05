@@ -2,97 +2,170 @@ import 'package:flutter/material.dart';
 
 import 'contenedor_chico_screen.dart';
 import 'contenedor_grande_screen.dart';
-import 'dart:ui'; // Necesario para BackdropFilter
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
 
   List contenedor = [
-    ['Contenedor Chico', false],
-    ['Contenedor Grande', false],
+    ['Contenedor Chico', Icons.view_compact, ContenedorPequenoScreen()],
+    ['Contenedor Grande', Icons.view_comfy, ContenedorGrandeScreen()],
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // AppBar con fondo negro y texto amarillo
       appBar: AppBar(
-        title: const Center(child: Text('HiveBot', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24))),
-        backgroundColor: const Color.fromARGB(255, 255, 245, 103),
-        elevation: 5,
+        title: const Text(
+          'HiveBot',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+            color: Colors.yellow, // Amarillo en el texto
+          ),
+        ),
+        backgroundColor: Colors.black, // Fondo negro para el AppBar
+        elevation: 0, // Sin sombra
+        actions: [
+          // Icono de notificaciones con color amarillo
+          IconButton(
+            icon: const Icon(Icons.notifications, color: Colors.yellow),
+            onPressed: () {
+              // Acción al presionar el icono de notificación
+              print("Notificaciones presionadas");
+            },
+          ),
+        ],
       ),
-      body: Stack(
-        children: [
-          // Imagen de fondo
-          Positioned.fill(
-            child: Image.asset(
-              'assets/background.jpg', // Asegúrate de tener esta imagen en la ruta correcta
-              fit: BoxFit.cover,
-            ),
-          ),
-          // Aplicar el difuminado
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0), // Aplicar el blur
-              child: Container(
-                color: Colors.black.withOpacity(0.18), // Color de fondo con opacidad para el difuminado
+      body: Container(
+        color: Colors.black, // Fondo negro para el cuerpo
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Título o descripción breve en la parte superior con texto amarillo
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                  '¡Bienvenido a HiveBot! Elige tu contenedor.',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.yellow, // Texto amarillo
+                  ),
+                  textAlign: TextAlign.center,
+                ),
               ),
-            ),
-          ),
-          // Contenido de la página
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: ListView.builder(
-              itemCount: contenedor.length,
-              itemBuilder: (BuildContext context, index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  child: GestureDetector(
-                    onTap: () {
-                      if (contenedor[index][0] == 'Contenedor Chico') {
+
+              // Colocar los banners uno arriba y otro abajo (ListView vertical)
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  children: [
+                    // Banner para "Contenedor Chico" (arriba)
+                    GestureDetector(
+                      onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ContenedorPequenoScreen(),
+                            builder: (context) => contenedor[0][2],
                           ),
                         );
-                      } else if (contenedor[index][0] == 'Contenedor Grande') {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ContenedorGrandeScreen(),
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 20),
+                        width: double.infinity,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          color: Colors.yellow[700], // Amarillo oscuro
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Center(
+                          child: Text(
+                            contenedor[0][0],
+                            style: TextStyle(fontSize: 20, color: Colors.black),
                           ),
-                        );
-                      }
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 100),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.8), // Fondo semi-transparente
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color.fromARGB(255, 178, 178, 178).withOpacity(0.3),
-                            blurRadius: 8,
-                            spreadRadius: 2,
-                          ),
-                        ],
-                      ),
-                      child: Text(
-                        contenedor[index][0],
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                  ),
-                );
-              },
-            ),
+                    
+                    // Banner para "Contenedor Grande" (abajo) ahora en el mismo color amarillo
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => contenedor[1][2],
+                          ),
+                        );
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          color: Colors.yellow[700], // Mismo amarillo que el primero
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Center(
+                          child: Text(
+                            contenedor[1][0],
+                            style: TextStyle(fontSize: 20, color: Colors.black),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Espacio entre los banners y el footer
+              Expanded(child: Container()),
+            ],
           ),
-        ],
+        ),
+      ),
+
+      // Footer con iconos reorganizados: Inicio, Usuario, Configuración, Ayuda
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.black, // Fondo negro para el footer
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround, // Distribuye los íconos
+            children: [
+              // Icono de Inicio (ahora al principio)
+              IconButton(
+                icon: Icon(Icons.home, color: Colors.yellow),
+                onPressed: () {
+                  print("Inicio presionado");
+                },
+              ),
+              
+              // Icono de Usuario
+              IconButton(
+                icon: Icon(Icons.person, color: Colors.yellow),
+                onPressed: () {
+                  print("Usuario presionado");
+                },
+              ),
+
+              // Icono de Configuración
+              IconButton(
+                icon: Icon(Icons.settings, color: Colors.yellow),
+                onPressed: () {
+                  print("Configuración presionada");
+                },
+              ),
+
+              // Icono de Ayuda (ahora al final)
+              IconButton(
+                icon: Icon(Icons.help, color: Colors.yellow),
+                onPressed: () {
+                  print("Ayuda presionada");
+                },
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

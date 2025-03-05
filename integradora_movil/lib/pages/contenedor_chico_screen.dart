@@ -1,7 +1,7 @@
 import 'dart:ui'; // Necesario para el BackdropFilter
 import 'package:flutter/material.dart';
-import 'package:integradora_movil/models/small_container.dart';  // Asegúrate de importar SmallContainer
-import 'package:integradora_movil/pages/insert_small_container.dart';  // Asegúrate de tener esta pantalla
+import 'package:integradora_movil/models/small_container.dart'; // Asegúrate de importar SmallContainer
+import 'package:integradora_movil/pages/insert_small_container.dart'; // Asegúrate de tener esta pantalla
 import 'package:integradora_movil/services/mongo_service.dart';
 import 'package:mongo_dart/mongo_dart.dart' as mongo;
 
@@ -14,201 +14,101 @@ class ContenedorPequenoScreen extends StatefulWidget {
 
 class _ContenedorPequenoState extends State<ContenedorPequenoScreen> {
   List<SmallContainer> scontainer = [];
-  late TextEditingController _tamanoController;
-  late TextEditingController _capacidadController;
-  late TextEditingController _formaController;
-  late TextEditingController _estadoConexionController;
-  late TextEditingController _materialController;
-  late TextEditingController _cargaDispositivoController;
-  late TextEditingController _consumoEnergeticoController;
-  late TextEditingController _nivelAlimentoController;
 
   @override
   void initState() {
     super.initState();
-    _tamanoController = TextEditingController();
-    _capacidadController = TextEditingController();
-    _formaController = TextEditingController();
-    _estadoConexionController = TextEditingController();
-    _materialController = TextEditingController();
-    _cargaDispositivoController = TextEditingController();
-    _consumoEnergeticoController = TextEditingController();
-    _nivelAlimentoController = TextEditingController();
     _fetchScontainer();
   }
 
   @override
   void dispose() {
-    _tamanoController.dispose();
-    _capacidadController.dispose();
-    _formaController.dispose();
-    _estadoConexionController.dispose();
-    _materialController.dispose();
-    _cargaDispositivoController.dispose();
-    _consumoEnergeticoController.dispose();
-    _nivelAlimentoController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // AppBar con fondo negro y texto amarillo
       appBar: AppBar(
-        title: Padding(
-          padding: const EdgeInsets.only(left: 10.0), // Ajusta la cantidad de padding aquí
-          child: const Text(
-            'Contenedor Pequeño',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+        title: const Text(
+          'Contenedor Pequeño',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+            color: Colors.yellow, // Amarillo en el texto
           ),
         ),
-        backgroundColor: const Color.fromARGB(255, 255, 245, 103),
-        elevation: 5,
+        backgroundColor: Colors.black, // Fondo negro para el AppBar
+        elevation: 0, // Sin sombra
         actions: [
           IconButton(
+            icon: const Icon(Icons.notifications, color: Colors.yellow),
             onPressed: () {
-              // Agregar lógica para abrir pantalla de agregar contenedor
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => InsertSmallContainerScreen()), // Cambié a InsertSmallContainerScreen
-              );
-            },
-            icon: const Icon(Icons.add),
-          ),
-        ],
-      ),
-      body: Stack(
-        children: [
-          // Fondo con difuminado
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/background.jpg'), // Asegúrate de tener esta imagen en la carpeta assets
-                  fit: BoxFit.cover,
-                ),
-              ),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0), // Difuminado
-                child: Container(
-                  color: Colors.black.withOpacity(0.18), // Sombra oscura para mejorar contraste
-                ),
-              ),
-            ),
-          ),
-          // Contenido de la pantalla
-          ListView.builder(
-            itemCount: scontainer.length,
-            itemBuilder: (context, index) {
-              var scont = scontainer[index];
-              return oneTile(scont);
+              print("Notificaciones presionadas");
             },
           ),
         ],
       ),
-    );
-  }
-
-  void _fetchScontainer() async {
-    scontainer = await MongoService().getSmallContainer(); // Cambié el método a getSmallContainer
-    setState(() {});
-  }
-
-  void _deleteSmallContainer(mongo.ObjectId id) async {
-    await MongoService().deleteSmallContainer(id); // Cambié el método a deleteSmallContainer
-    _fetchScontainer();
-  }
-
-  void _updateSmallContainer(SmallContainer scont) async {
-    await MongoService().updateSmallContainer(scont); // Cambié el método a updateSmallContainer
-    _fetchScontainer();
-  }
-
-  void _showEditDialog(SmallContainer scont) {
-    _tamanoController.text = scont.tamano;
-    _capacidadController.text = scont.capacidad.toString();
-    _formaController.text = scont.forma;
-    _estadoConexionController.text = scont.estadoConexion.toString();
-    _materialController.text = scont.material;
-    _cargaDispositivoController.text = scont.cargaDispositivo.toString();
-    _consumoEnergeticoController.text = scont.consumoEnergetico.toString();
-    _nivelAlimentoController.text = scont.nivelAlimento.toString();
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Editar contenedor'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
+      body: Container(
+        color: Colors.black, // Fondo negro para todo el cuerpo
+        child: ListView.builder(
+          itemCount: scontainer.length,
+          itemBuilder: (context, index) {
+            var scont = scontainer[index];
+            return oneTile(scont);
+          },
+        ),
+      ),
+      // Footer con iconos reorganizados: Inicio, Usuario, Configuración, Ayuda
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.black, // Fondo negro para el footer
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround, // Distribuye los íconos
             children: [
-              TextField(
-                decoration: const InputDecoration(labelText: 'Tamaño'),
-                controller: _tamanoController,
+              // Icono de Inicio
+              IconButton(
+                icon: Icon(Icons.home, color: Colors.yellow),
+                onPressed: () {
+                  print("Inicio presionado");
+                },
               ),
-              TextField(
-                controller: _capacidadController,
-                decoration: const InputDecoration(labelText: 'Capacidad'),
-                keyboardType: TextInputType.number,
+              // Icono de Usuario
+              IconButton(
+                icon: Icon(Icons.person, color: Colors.yellow),
+                onPressed: () {
+                  print("Usuario presionado");
+                },
               ),
-              TextField(
-                controller: _formaController,
-                decoration: const InputDecoration(labelText: 'Forma'),
+              // Icono de Configuración
+              IconButton(
+                icon: Icon(Icons.settings, color: Colors.yellow),
+                onPressed: () {
+                  print("Configuración presionada");
+                },
               ),
-              TextField(
-                controller: _estadoConexionController,
-                decoration: const InputDecoration(labelText: 'Estado de la Conexion'),
-              ),
-              TextField(
-                controller: _materialController,
-                decoration: const InputDecoration(labelText: 'Material'),
-              ),
-              TextField(
-                controller: _cargaDispositivoController,
-                decoration: const InputDecoration(labelText: 'Carga del Dispositivo'),
-                keyboardType: TextInputType.number,
-              ),
-              TextField(
-                controller: _consumoEnergeticoController,
-                decoration: const InputDecoration(labelText: 'Consumo Energético'),
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-              ),
-              TextField(
-                controller: _nivelAlimentoController,
-                decoration: const InputDecoration(labelText: 'Nivel de Alimento'),
-                keyboardType: TextInputType.number,
+              // Icono de Ayuda
+              IconButton(
+                icon: Icon(Icons.help, color: Colors.yellow),
+                onPressed: () {
+                  print("Ayuda presionada");
+                },
               ),
             ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Cancelar'),
-            ),
-            TextButton(
-              onPressed: () {
-                scont.tamano = _tamanoController.text;
-                scont.capacidad = double.tryParse(_capacidadController.text) ?? 0.0;
-                scont.forma = _formaController.text;
-                scont.estadoConexion = _estadoConexionController.text.toLowerCase() == 'true';
-                scont.material = _materialController.text;
-                scont.cargaDispositivo = int.tryParse(_cargaDispositivoController.text) ?? 0;
-                scont.consumoEnergetico = double.tryParse(_consumoEnergeticoController.text) ?? 0.0;
-                scont.nivelAlimento = int.tryParse(_nivelAlimentoController.text) ?? 0;
-
-                _updateSmallContainer(scont);
-                Navigator.pop(context);
-              },
-              child: const Text('Guardar'),
-            ),
-          ],
-        );
-      },
+        ),
+      ),
     );
   }
 
-  // Personalizamos el diseño de los contenedores dentro de la lista
+  
+  void _fetchScontainer() async {
+    scontainer = await MongoService().getSmallContainer();
+    setState(() {});
+  }
+
   Widget oneTile(SmallContainer scont) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -265,6 +165,91 @@ class _ContenedorPequenoState extends State<ContenedorPequenoScreen> {
           Expanded(child: Text(value)),
         ],
       ),
+    );
+  }
+
+  void _deleteSmallContainer(mongo.ObjectId id) async {
+    await MongoService().deleteSmallContainer(id);
+    _fetchScontainer();
+  }
+
+  void _updateSmallContainer(SmallContainer scont) async {
+    await MongoService().updateSmallContainer(scont);
+    _fetchScontainer();
+  }
+
+  void _showEditDialog(SmallContainer scont) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Editar contenedor'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                decoration: const InputDecoration(labelText: 'Tamaño'),
+                controller: TextEditingController(text: scont.tamano),
+              ),
+              TextField(
+                controller: TextEditingController(text: scont.capacidad.toString()),
+                decoration: const InputDecoration(labelText: 'Capacidad'),
+                keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: TextEditingController(text: scont.forma),
+                decoration: const InputDecoration(labelText: 'Forma'),
+              ),
+              TextField(
+                controller: TextEditingController(text: scont.estadoConexion.toString()),
+                decoration: const InputDecoration(labelText: 'Estado de la Conexion'),
+              ),
+              TextField(
+                controller: TextEditingController(text: scont.material),
+                decoration: const InputDecoration(labelText: 'Material'),
+              ),
+              TextField(
+                controller: TextEditingController(text: scont.cargaDispositivo.toString()),
+                decoration: const InputDecoration(labelText: 'Carga del Dispositivo'),
+                keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: TextEditingController(text: scont.consumoEnergetico.toString()),
+                decoration: const InputDecoration(labelText: 'Consumo Energético'),
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+              ),
+              TextField(
+                controller: TextEditingController(text: scont.nivelAlimento.toString()),
+                decoration: const InputDecoration(labelText: 'Nivel de Alimento'),
+                keyboardType: TextInputType.number,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                scont.tamano = TextEditingController(text: scont.tamano).text;
+                scont.capacidad = double.tryParse(TextEditingController(text: scont.capacidad.toString()).text) ?? 0.0;
+                scont.forma = TextEditingController(text: scont.forma).text;
+                scont.estadoConexion = TextEditingController(text: scont.estadoConexion.toString()).text.toLowerCase() == 'true';
+                scont.material = TextEditingController(text: scont.material).text;
+                scont.cargaDispositivo = int.tryParse(TextEditingController(text: scont.cargaDispositivo.toString()).text) ?? 0;
+                scont.consumoEnergetico = double.tryParse(TextEditingController(text: scont.consumoEnergetico.toString()).text) ?? 0.0;
+                scont.nivelAlimento = int.tryParse(TextEditingController(text: scont.nivelAlimento.toString()).text) ?? 0;
+                _updateSmallContainer(scont);
+                Navigator.pop(context);
+              },
+              child: const Text('Guardar'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
